@@ -1,0 +1,6 @@
+pytest
+click
+ujson>=2.0.3
+black==21.5b0
+pydantic==1.8.1
+python-binance==1.0.7
