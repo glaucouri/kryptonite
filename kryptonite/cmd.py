@@ -4,8 +4,8 @@ kryptonite main cli (Command Line Interface)
 """
 import click
 import time
-from .main import schedule, log, run_threaded, binance
-from .settings import Settings
+from .main import schedule, log, run_threaded, binance_job
+from . import settings
 import logging
 from functools import partial
 
@@ -39,7 +39,8 @@ def cli(**kwargs):
         overrides["every_sec"] = kwargs["delay"]
 
     """Setting initialization """
-    S = Settings(**overrides)
+    S = settings.Settings(**overrides)
+    settings.S = S # module injection
     
     logging.basicConfig(format="%(asctime)s %(message)s")
     log.setLevel(S.log_verbosity)
@@ -47,10 +48,10 @@ def cli(**kwargs):
     if S.binance_enabled:
         log.info("Scheduling binance every %ss", S.every_sec)
         schedule.every(S.every_sec).seconds.do(
-            run_threaded, partial(binance, S.binance_symbols, bool(kwargs.get("dry_run")))
+            run_threaded, partial(binance_job, S.binance_symbols, not bool(kwargs.get("dry_run")))
         )
 
     """Main loop """
     while 1:
         schedule.run_pending()
-        time.sleep(0.1)
+        time.sleep(1)
