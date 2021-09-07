@@ -1,5 +1,5 @@
 from typing import Any, Set, List
-from logging import ERROR, WARNING
+from logging import ERROR, WARNING, getLogger
 
 from pydantic import (
     BaseModel,
@@ -9,6 +9,16 @@ from pydantic import (
     Field,
 )
 
+
+"""Settings priority:
+ 1. env variables
+      remember the quoting, eg: 
+      > export binance_symbols=[\"BTCEUR\"]
+
+ 2. .env file on current directory - see docker documentation
+ 
+ 3. default values
+"""
 
 class Settings(BaseSettings):
     every_sec: int = 5
@@ -29,3 +39,5 @@ class Settings(BaseSettings):
 
 
 S = Settings()
+
+log = getLogger("kryptonite")
